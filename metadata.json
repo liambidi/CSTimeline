@@ -1,0 +1,5 @@
+{
+  "name": "Jeu de Timeline Chronologique",
+  "description": "Un jeu de cartes multijoueur où les joueurs doivent placer des événements historiques dans le bon ordre chronologique pour être le premier à vider sa main.",
+  "requestFramePermissions": []
+}
