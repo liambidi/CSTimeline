@@ -77,36 +77,52 @@ function App() {
   };
 
   const nextTurn = () => {
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      setCurrentPlayerIndex(nextPlayerIndex);
-      showMessage(`C'est au tour de ${players[nextPlayerIndex].name}.`);
+    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    setCurrentPlayerIndex(nextPlayerIndex);
+    showMessage(`C'est au tour de ${players[nextPlayerIndex].name}.`);
   };
 
   const handlePlaceCard = (timelineIndex: number) => {
     if (!selectedCard) return;
 
     const cardToPlace = selectedCard;
+    const currentPlayer = players[currentPlayerIndex];
+
+    const cardInHand = currentPlayer.hand.find(c => c.id === cardToPlace.id);
+    if (!cardInHand) {
+      setSelectedCard(null);
+      return;
+    }
+
     const yearToPlace = cardToPlace.year;
 
     const leftCard = timeline[timelineIndex - 1];
     const rightCard = timeline[timelineIndex];
 
-    const isCorrectPlacement = 
-      (!leftCard || yearToPlace >= leftCard.year) && 
+    const isCorrectPlacement =
+      (!leftCard || yearToPlace >= leftCard.year) &&
       (!rightCard || yearToPlace <= rightCard.year);
 
-    const currentPlayer = players[currentPlayerIndex];
     let newHand = [...currentPlayer.hand];
-    let newDeck = [...deck];
+    const newDeck = [...deck];
 
     if (isCorrectPlacement) {
       // Correct placement
       showMessage("Correct !");
       newHand = newHand.filter(c => c.id !== cardToPlace.id);
-      
+
       const newTimeline = [...timeline];
       newTimeline.splice(timelineIndex, 0, cardToPlace);
       setTimeline(newTimeline);
+
+      if (newDeck.length > 0) {
+        const drawnCard = newDeck.pop();
+        if (drawnCard) {
+          newHand.push(drawnCard);
+        }
+      }
+
+      setDeck(newDeck);
 
       if (newHand.length === 0) {
         setWinner(currentPlayer);
@@ -120,7 +136,7 @@ function App() {
       if (newDeck.length > 0) {
         const penaltyCard = newDeck.pop();
         if (penaltyCard) {
-            newHand.push(penaltyCard);
+          newHand.push(penaltyCard);
         }
       }
       setDeck(newDeck);
